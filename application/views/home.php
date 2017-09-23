@@ -10,9 +10,9 @@
         <div class="row">
         <div class="col-md-8">
         <h1>Welcome To CloudPOS!</h1>
-       <p>With our cloud based Point Of Sale software, you’ll now have everything you need for your brick and mortar store (or pop-up) to use from anywhere and on any dwevice with internet conectivity. CloudPOS is your complete retail management software in the cloud, giving you complete control.
+       <p>With our cloud based Point Of Sale software, you’ll now have everything you need for your brick and mortar store (or pop-up) to use from anywhere and on any device with internet conectivity. CloudPOS is your complete retail management software in the cloud, giving you complete control.
           </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="<?=base_url()?>index.php/About" role="button">View details &raquo;</a></p>
       </div>
     
       
