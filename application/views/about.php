@@ -17,17 +17,17 @@
       
  <div class="col-md-6"> 
           <div class="col-md-4">
-            <h4>Basic</h4>
+            <h4 class="text-primary">Basic</h4>
             <p>This level is perfect for sole proprietorship as it includes only one user role</p>
             <p>$50.00 CAD per month (1 user)</p>  
           </div>
           <div class="col-md-4">
-            <h4>Professional</h4>
+            <h4 class="text-primary">Professional</h4>
             <p>The pro level is designed to suite the needs of small businesses operating out of a single location</p>
             <p>$200.00 CAD per month (5 users)</p> 
           </div>
           <div class="col-md-4">
-            <h4>Enterprise</h4>
+            <h4 class="text-primary">Enterprise</h4>
             <p>Enterprise subscribers have the ability to add as many users as necessary to suite their large commerce needs</p>
             <p>$1000.00 CAD per month (unlimited users)</p>  
           </div>
