@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Contact extends CI_Controller {
+class Register extends CI_Controller {
 
   var $TPL;
 
@@ -17,12 +17,12 @@ class Contact extends CI_Controller {
 
     }
 
-     $this->template->show('contact', $this->TPL);
+     $this->template->show('register', $this->TPL);
    
   }
   
   public function reset(){
-     $this->template->show('contact', $this->TPL);
+     $this->template->show('register', $this->TPL);
   }
   public function submit($name, $email, $msg){
     $name = htmlspecialchars($name);
