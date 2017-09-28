@@ -24,6 +24,7 @@
             <button id="submit" type="submit" class="btn btn-success">Submit</button>
             <a href="<?=base_url()?>index.php/Contact/reset" class="btn btn-warning">Reset</a>
           </form>
+          <div id="resp"></div>
 
         </div>
         
@@ -72,7 +73,7 @@ $(document).ready(function() {
   function (data)
   {
   var obj = JSON.parse(data);
-  $("#formRow").append(obj);
+  $("#resp").html(obj);
   $('.form-left').trigger("reset");
   });
 
