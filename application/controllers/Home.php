@@ -13,6 +13,19 @@ class Home extends CI_Controller {
 
   public function index()
   {
+    $this->TPL['loggedin'] = $this->userauth->validSessionExists();
     $this->template->show('home', $this->TPL);
+  }
+    public function loginuser()
+  {
+    $this->TPL['msg'] =
+      $this->userauth->login($this->input->post("email"),
+                             $this->input->post("password"));
+
+    $this->TPL['loggedin'] = $this->userauth->validSessionExists();
+    $this->template->show('home', $this->TPL);
+  }
+  public function logout(){
+    $this->userauth->logout();
   }
 }

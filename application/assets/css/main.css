@@ -74,4 +74,7 @@ tr td:hover { background: #666; color: #FFF; } /* Hover cell effect! */
     width:15%;
     margin: auto;
 }
+.error{
+    color:red;
+}
 

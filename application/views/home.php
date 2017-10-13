@@ -7,6 +7,7 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
+        <?php if (!$loggedin) : ?>
         <div class="row">
         <div class="col-md-8">
         <h1>Welcome To CloudPOS!</h1>
@@ -17,13 +18,13 @@
     
       
  <div class="col-md-4 bg-primary"> 
-          <form class="form-right" role="form">
+          <form class="form-right" role="form" method="post" action="<?=base_url()?>index.php/Home/loginuser">
             <h3>Sign In</h3>
             <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
+              <input name="email" id="email" type="text" placeholder="Email" class="form-control">
             </div>
             <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
+              <input name="password" id="password" type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Log in</button>
             <a href="#" class="btn btn-success">Sign up</a>
@@ -46,7 +47,13 @@
         </div>
         </div>
     </div>
-       
+    <?php else :?>
+    <div>You Are logged in
+      <a href="<?=base_url()?>index.php/Home/logout">Log out</a>
+    </div>
+  <?php endif?>
+       </div>
+     </div>
 
       <hr>
           <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
@@ -65,5 +72,6 @@
             r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
         </script>
+
     </body>
 </html>

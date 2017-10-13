@@ -17,19 +17,19 @@
       
  <div class="col-md-6"> 
           <div class="col-md-4">
-            <h4 class="text-primary">Basic</h4>
-            <p>This level is perfect for sole proprietorship as it includes only one user role</p>
-            <p>$50.00 CAD per month (1 user)</p>  
+            <h4 class="text-primary"><?=$basic['name']?></h4>
+            <p><?=$basic['description']?></p>
+            <p>$<?=number_format($basic['price'], 2, '.', '')?> CAD per month (<?=$basic['max_users']?> user)</p>  
           </div>
           <div class="col-md-4">
-            <h4 class="text-primary">Professional</h4>
-            <p>The pro level is designed to suite the needs of small businesses operating out of a single location</p>
-            <p>$200.00 CAD per month (5 users)</p> 
+            <h4 class="text-primary"><?=$professional['name']?></h4>
+            <p><?=$professional['description']?></p>
+            <p>$<?=number_format($professional['price'], 2, '.', '')?> CAD per month (<?=$professional['max_users']?> users)</p>  
           </div>
           <div class="col-md-4">
-            <h4 class="text-primary">Enterprise</h4>
-            <p>Enterprise subscribers have the ability to add as many users as necessary to suite their large commerce needs</p>
-            <p>$1000.00 CAD per month (unlimited users)</p>  
+            <h4 class="text-primary"><?=$enterprise['name']?></h4>
+            <p><?=$enterprise['description']?></p>
+            <p>$<?=number_format($enterprise['price'], 2, '.', '')?> CAD per month (<?=$enterprise['max_users']?> users)</p>  
           </div>
         </div>
         </div>
