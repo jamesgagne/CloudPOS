@@ -28,7 +28,6 @@ li a:hover {
 
 .footer
 {
-  background-color:black;
   color:white;
   padding:  5px 5px 1px 5px;
 }
@@ -70,12 +69,18 @@ tr:nth-child(even) td { background: #F1F1F1; }
 tr:nth-child(odd) td { background: #FEFEFE; }  
 
 tr td:hover { background: #666; color: #FFF; } /* Hover cell effect! */
-#logo{
+#logoDiv{
     width:15%;
     margin: auto;
 }
 .error{
     color:red;
 }
+#logo{
+   display: block;
+    margin: auto;
+    width: 100%;
+}
+
 
 

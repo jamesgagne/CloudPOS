@@ -7,6 +7,7 @@ class Userauth  {
      
     private $username;
     private $password;
+    private $org_id;
 
     /**
     * Turn off notices so we can have session_start run twice
@@ -155,6 +156,7 @@ class Userauth  {
         if ($storedVal==$inputVal){
           $this->accesslevel = $result[0]['role_id'];
           $this->frozen =  false;
+          $this->org_id = $result[0]['organization_ID'];
         return true;
       }
       } 
@@ -185,6 +187,7 @@ class Userauth  {
         $_SESSION['username'] = $this->username;
         $_SESSION['accesslevel'] = $this->accesslevel;
         $_SESSION['basepage'] = base_url() . "index.php?/Home";
+        $_SESSION['org_id'] = $this->org_id;
         
     }
 	

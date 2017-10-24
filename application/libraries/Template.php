@@ -21,4 +21,12 @@ class Template
         $CI->load->view($view, $args);
         $CI->load->view('footer',$args);
     }
+    function showCustomApp($view,$args=NULL){
+    	$CI =& get_instance();
+
+        $CI->load->view('customHeader',$args);
+        $CI->load->view('customNavigation',$args);
+        $CI->load->view($view, $args);
+        $CI->load->view('customFooter',$args);
+    }
 }

@@ -49,7 +49,7 @@
     </div>
     <?php else :?>
     <div>You Are logged in
-      <a href="<?=base_url()?>index.php/Home/logout">Log out</a>
+      
     </div>
   <?php endif?>
        </div>
