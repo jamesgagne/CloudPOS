@@ -122,43 +122,8 @@ Customer<br>
       </div>
         <div class="form-group"><?= form_input(array('name' => 'search',
  'id' => 'search' , 'class'=>'form-control', 'placeholder'=>'Type to search')); ?> </div>
-      <TABLE id = "products">
-  <tr>
-    <th style="text-align: center;">Delete</th>
-    <th style="text-align: center;">Edit</span></th>
-    <th style="text-align: center;"><?= $headerid ?></th>
-    <th style="text-align: center;"><?= $headerfname ?></th>
-    <th style="text-align: center;"><?= $headerlname ?></th>
-    <th style="text-align: center;"><?= $headeremail ?></th>
-    <th style="text-align: center;"><?= $headerphone ?></th>
-    <th style="text-align: center;"><?= $headertype ?></th>
-    <th style="text-align: center;"><?= $headerwebsite ?></th>
-    <th style="text-align: center;"><?= $headercompany ?></th>
-  <?php foreach ($listing as $key => $value): ?>
-  <tr>
-    
-    <td><a id="delete<?=$value['contact_ID']?>"><span class="glyphicon glyphicon-remove"></a></span></td>
-    
-    <td><a id="edit<?=$value['contact_ID']?>"> <span class="glyphicon glyphicon-pencil"></span></a></td>
-    
-    <td><?= $value['contact_ID']?></td>
-    
-    <td><?= $value['first_name']?></td>
-    
-    <td><?= $value['last_name']?></td>
-
-    <td><?= $value['email']?></td>
-
-    <td><?= $value['phone']?></td>
-
-    <td><?= $value['type']?></td>
-
-    <td><?= $value['website']?></td>
-
-    <td><?= $value['company']?></td>
-
-  </tr> 
-<?php endforeach ?>
+      <TABLE id = "contacts">
+ 
 </TABLE>
        </div>
      </div>
@@ -169,10 +134,10 @@ Customer<br>
 
 
 $(document).ready(function() {  
-
+$('#search').trigger('keyup');
 $("#addnewButton").click(function(event){
     event.preventDefault();
-   
+   $("#isEditing").val(false);
    $('.error').html('');
    $('#mainForm')[0].reset();
    $('#first_name').val('');
@@ -184,10 +149,11 @@ $("#addnewButton").click(function(event){
    $('#address').val('');
    $('#city').val(0);
    $('#country').val(0);
+   $('#contact_ID').val('');
 
   document.getElementById("addnew").style.display = "block"; 
   document.getElementById("addnewButton").style.display = "none";
-  $("#isEditing").val(false);
+  
   
 
  });
@@ -200,38 +166,140 @@ $("#cancelButton").click(function(event){
  
 
  });
-<?php foreach ($listing as $key => $value): ?>
-$("#edit<?=$value['contact_ID']?>").click(function(event){
-    event.preventDefault();
-     document.getElementById("addnew").style.display = "block"; 
-    document.getElementById("addnewButton").style.display = "none";
-  $("#isEditing").val(true);
-  $.get("<?=base_url()?>index.php/Contacts/getContact/<?=$value['contact_ID']?>",
-  function (data)
-  {
-  cont = JSON.parse(data);
-  $.each(cont, function( index, value ) {
-  if (index=='type'){
-    $("#"+value).prop("checked", true);
-  }
-  else if (index=='city'){
-    $('#city').val(value);
-  }
-  else{
-  $("#"+index).val(value);
-  }
 
-});
-  });
- 
-
- });
-<?php endforeach ?>
 <?php if ($showForm):?>
      document.getElementById("addnew").style.display = "block"; 
     document.getElementById("addnewButton").style.display = "none";
 <? endif ?>
-});    
+$("#search").keyup(function(){
+   if ($("#search").val() ==""){
+    $.get("<?=base_url()?>index.php/Contacts/getAll/",
+  function (data)
+  {
+  $("#contacts").html("<tr><th style=\"text-align: center;\">Delete</th><th style=\"text-align: center;\">Edit</span></th><th style=\"text-align: center;\"><?= $headerid ?></th><th style=\"text-align: center;\"><?= $headerfname ?></th><th style=\"text-align: center;\"><?= $headerlname ?></th><th style=\"text-align: center;\"><?= $headeremail ?></th><th style=\"text-align: center;\"><?= $headerphone ?></th><th style=\"text-align: center;\"><?= $headertype ?></th><th style=\"text-align: center;\"><?= $headerwebsite ?></th><th style=\"text-align: center;\"><?= $headercompany ?></th></tr>");
+  var obj = JSON.parse(data);
+   $.each(obj, function(key, value){
+  
+  $("#contacts").append("  <tr id="+value['contact_ID']+"><td><a id='delete"+value['contact_ID']+"'><span class='glyphicon glyphicon-remove'></a></span></td><td><a id='edit"+value['contact_ID']+"'> <span class='glyphicon glyphicon-pencil'></span></a></td><td>"+value['contact_ID']+"</td><td>"+value['first_name']+"</td><td>"+value['last_name']+"</td><td>"+ value['email']+"</td><td>"+value['phone']+"</td><td>"+value['type']+"</td><td>"+ value['website']+"</td><td>"+value['company']+"</td></tr>");
+  $("#delete"+value['contact_ID']).click(function(event){
+    if (confirm("are you sure you want to delete this record?") == true) 
+    {
+      $.get("<?=base_url()?>index.php/Contacts/deleteContact/"+ value['contact_ID'],
+      function (data)
+      {
+        resp = JSON.parse(data);
+        if (resp['success']==true){
+          $('#'+value['contact_ID']).html('');
+        }
+        else{
+          alert(resp['error']);
+        }
+      });
+    }
+    else 
+    {
+      alert('no changes made');
+    }
+ });
+$("#edit"+value['contact_ID']).click(function(event){
+    event.preventDefault();
+     document.getElementById("addnew").style.display = "block"; 
+    document.getElementById("addnewButton").style.display = "none";
+  
+  $("#isEditing").val(true);
+  
+  $.get("<?=base_url()?>index.php/Contacts/getContact/"+value['contact_ID'],
+   function (data)
+  {
+   cont = JSON.parse(data);
+   $.each(cont, function( index, value ) {
+   if (index=='type'){
+     $("#"+value).prop("checked", true);
+    }
+    else if (index=='city'){
+      $('#city').val(value);
+   }
+    else{
+    $("#"+index).val(value);
+   }
+
+    });
+  });
+
+
+});
+
+  });
+  
+  });
+
+   }
+   else{
+    $.get("<?=base_url()?>index.php/Contacts/getFiltered/" + $("#search").val(),
+  function (data)
+  {
+   $("#contacts").html("<tr><th style=\"text-align: center;\">Delete</th><th style=\"text-align: center;\">Edit</span></th><th style=\"text-align: center;\"><?= $headerid ?></th><th style=\"text-align: center;\"><?= $headerfname ?></th><th style=\"text-align: center;\"><?= $headerlname ?></th><th style=\"text-align: center;\"><?= $headeremail ?></th><th style=\"text-align: center;\"><?= $headerphone ?></th><th style=\"text-align: center;\"><?= $headertype ?></th><th style=\"text-align: center;\"><?= $headerwebsite ?></th><th style=\"text-align: center;\"><?= $headercompany ?></th></tr>");
+  var obj = JSON.parse(data);
+  $.each(obj, function(key, value){
+  
+  $("#contacts").append("  <tr id="+value['contact_ID']+"><td><a id='delete"+value['contact_ID']+"'><span class='glyphicon glyphicon-remove'></a></span></td><td><a id='edit"+value['contact_ID']+"'> <span class='glyphicon glyphicon-pencil'></span></a></td><td>"+value['contact_ID']+"</td><td>"+value['first_name']+"</td><td>"+value['last_name']+"</td><td>"+ value['email']+"</td><td>"+value['phone']+"</td><td>"+value['type']+"</td><td>"+ value['website']+"</td><td>"+value['company']+"</td></tr>");
+$("#delete"+value['contact_ID']).click(function(event){
+    if (confirm("are you sure you want to delete this record?") == true) 
+    {
+      $.get("<?=base_url()?>index.php/Contacts/deleteContact/"+ value['contact_ID'],
+      function (data)
+      {
+        resp = JSON.parse(data);
+        if (resp['success']==true){
+          $('#'+value['contact_ID']).html('');
+        }
+        else{
+          alert(resp['error']);
+        }
+      });
+    }
+    else 
+    {
+      alert('no changes made');
+    }
+ });
+$("#edit"+value['contact_ID']).click(function(event){
+    event.preventDefault();
+     document.getElementById("addnew").style.display = "block"; 
+    document.getElementById("addnewButton").style.display = "none";
+  
+  $("#isEditing").val(true);
+  
+  $.get("<?=base_url()?>index.php/Contacts/getContact/"+value['contact_ID'],
+   function (data)
+  {
+   cont = JSON.parse(data);
+   $.each(cont, function( index, value ) {
+   if (index=='type'){
+     $("#"+value).prop("checked", true);
+    }
+    else if (index=='city'){
+      $('#city').val(value);
+   }
+    else{
+    $("#"+index).val(value);
+   }
+
+    });
+  });
+
+
+});
+  });
+   
+  
+  });
+}
+  return false;
+  });
+$('#search').trigger('keyup');
+});
+
 </script>
 
     </body>

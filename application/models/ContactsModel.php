@@ -1,15 +1,77 @@
 <?php
 class ContactsModel extends CI_Model{
  /*
+ --contacts--
  first_name 
  last_name
  organization_ID
  email
- type
  website
  company
  phone
+ --addresses--
+ street_address
+ city_ID
+ country_ID 
+ organization_id
+ user_id
+ type=cont||user
  */
+public function deleteRecord($id){
+	$this->db->delete('contacts', array('contact_ID' => $id)); 
+	$this->db->delete('addresses', array('user_id' => $id, 'type'=>'cont')); 
+	return "success"; 
+}
+
+public function createRecord($post){
+$data = array(
+               'first_name' => $post['first_name'],
+               'last_name' => $post['last_name'],
+               'email' => $post['email'],
+               'phone' => $post['phone'],
+               'website' => $post['website'],
+               'type' => $post['type'],
+               'organization_ID' => $post['organization_ID'],
+               'company'=> $post['company']
+            );
+$q = $this->db->insert('contacts', $data); 
+$new_cont_id = $this->db->insert_id();
+
+	$data = array(
+               'street_address' => $post['address'],
+               'city_ID' => $post['city'],
+               'country_ID' => $post['country'],
+               'type'=> 'cont',
+               'user_id' => $new_cont_id,
+               'organization_id' => $post['organization_ID']
+            );
+$this->db->insert('addresses', $data); 
+}
+public function updateRecord($post){
+	$data = array(
+               'first_name' => $post['first_name'],
+               'last_name' => $post['last_name'],
+               'email' => $post['email'],
+               'phone' => $post['phone'],
+               'website' => $post['website'],
+               'type' => $post['type'],
+               'company'=> $post['company']
+            );
+
+$this->db->where('contact_ID', $post['contact_ID']);
+$this->db->update('contacts', $data); 
+	
+	$data = array(
+               'street_address' => $post['address'],
+               'city_ID' => $post['city'],
+               'country_ID' => $post['country']
+            );
+
+$this->db->where(array('user_id'=>$post['contact_ID'],'type'=>'cont'));
+$this->db->update('addresses', $data);
+ 
+}
+
  public function getAddress($id){
  	 	$query = $this->db->get_where('addresses',array('user_id' => $id, 'type'=>'cont'));
  	 	$add= $query->result_array();
