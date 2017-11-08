@@ -4,22 +4,24 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Contacts extends CI_Controller {
-
+     
+  
   var $TPL;
   var $postErrors = array();
-
+  var $org;
   public function __construct()
   {
     parent::__construct();
+    $this->load->model('ContactsModel');
+    $this->org = $this->getOrganization();
     // Your own constructor code
   }
 
   public function index()
   {
-    if($this->userauth->validSessionExists()){     
-    $this->load->model('ContactsModel');
+    if($this->userauth->validSessionExists()){
       $this->TPL['loggedin'] = $this->userauth->validSessionExists();
-    $this->TPL['org_details'] = $this->getOrganization();
+    $this->TPL['org_details'] = $this->org;
     $this->TPL['headerid'] = "Contact ID";
     $this->TPL['headerfname']= "First Name";
     $this->TPL['headerlname']= "Last Name";
@@ -53,8 +55,7 @@ class Contacts extends CI_Controller {
 
   public function formSubmit(){
     $this->load->helper(array('form', 'url'));
-    $this->load->library('form_validation');   
-    $this->load->model('ContactsModel');
+    $this->load->library('form_validation');
     $validation = $this->ContactsModel->getValidationRules();
 
     $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
@@ -63,7 +64,7 @@ class Contacts extends CI_Controller {
     if ($this->form_validation->run() == FALSE)
     { 
       $this->TPL['loggedin'] = $this->userauth->validSessionExists();
-      $this->TPL['org_details'] = $this->getOrganization();
+      $this->TPL['org_details'] = $this->org;
       $this->TPL['listing'] = $this->ContactsModel->getData($this->TPL['org_details']['organization_ID']);
       $this->TPL['headerid'] = "Contact ID";
       $this->TPL['headerfname']= "First Name";
@@ -88,8 +89,7 @@ class Contacts extends CI_Controller {
         $this->ContactsModel->updateRecord($_POST);
       }
       else{
-        $org = $this->getOrganization();
-        $_POST['organization_ID'] = $org['organization_ID'];
+        $_POST['organization_ID'] = $this->org['organization_ID'];
         $this->ContactsModel->createRecord($_POST);
       
       }
@@ -99,9 +99,7 @@ class Contacts extends CI_Controller {
 
 
 public function getContact($id){ 
-  $org = $this->getOrganization();
-  $org_id = $org['organization_ID'];  
-    $this->load->model('ContactsModel');
+  $org_id = $this->org['organization_ID'];  
    $contResult = $this->ContactsModel->getContact($id, $org_id);
    $addressResults = $this->ContactsModel->getAddress($id);
    $resp =  array_merge($contResult[0], $addressResults);
@@ -111,7 +109,6 @@ public function getContact($id){
 
 }
 public function deleteContact($id){
-    $this->load->model('ContactsModel');
     $resp = $this->ContactsModel->deleteRecord($id);
     if ($resp=="success"){
       echo json_encode(array('success' => true));
@@ -121,17 +118,15 @@ public function deleteContact($id){
     }
 }
   public function getFiltered($string){
-  $org = $this->getOrganization();
-  $org_id = $org['organization_ID'];
+  $org_id = $this->org['organization_ID'];
   $query = $this->db-> query("SELECT * FROM contacts where organization_ID=$org_id and (first_name like '%".$string."%' or contact_ID like '%".$string."%' or last_name like '%".$string."%' or email like '%".$string."%' or phone like '%".$string."%' or website like '%".$string."%' or company like '%".$string."%') ORDER BY contact_ID ASC;");
     echo json_encode($query->result_array());
     
   }
 
   public function getAll(){
-    $this->load->model('ContactsModel');
-    $org = $this->getOrganization();
-    $result = $this->ContactsModel->getData($org['organization_ID']);
+    $org_id = $this->org['organization_ID'];
+    $result = $this->ContactsModel->getData($org_id);
   echo json_encode($result);
   }
   

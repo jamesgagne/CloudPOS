@@ -49,7 +49,7 @@
     <?= form_label('Contact Type', 'type'); ?> <br>
 <?= form_input(array('type'=>'radio','name' => 'type','value'=> 'Customer', 'id'=>'Customer')); ?> 
 Customer<br>
-<?= form_input(array('type'=>'radio','name' => 'type', 'value'=> 'Vendor', 'id'=>'Customer')); ?> Vendor<br>
+<?= form_input(array('type'=>'radio','name' => 'type', 'value'=> 'Vendor', 'id'=>'Vendor')); ?> Vendor<br>
 </div>
 <?= form_submit(array('name'=>'submit', 'value'=>'Submit', 'class'=>"btn btn-success", 'id'=>'formButton')); ?>
 <?= form_submit(array('name'=>'cancel', 'value'=>'Cancel', 'class'=>"btn btn-warning", 'id'=>'cancelButton')); ?>

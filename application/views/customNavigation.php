@@ -5,5 +5,5 @@
  <li><a href="<?= base_url(); ?>index.php?/Home">Payments</a></li>
  <li><a href="<?= base_url(); ?>index.php?/Home">Invoices</a></li>
  <li><a href="<?= base_url(); ?>index.php?/Contacts">Contacts</a></li>
- <li><a href="<?= base_url(); ?>index.php?/Home">Home</a></li>
+ <li><a href="<?= base_url(); ?>index.php?/PortalHome">Home</a></li>
 </ul>

@@ -48,7 +48,7 @@
         </div>
     </div>
     <?php else :?>
-    <div>You Are logged in
+    <div>
       
     </div>
   <?php endif?>

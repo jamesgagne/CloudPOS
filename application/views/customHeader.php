@@ -36,6 +36,6 @@
     <body>
 
 <div id="logoDiv" >
-<img id="logo"src="<?= assetUrl() ?>/img/<?= $org_details['name'] ?>/<?= $org_details['image'] ?>" height="125px">
+<img id="logo"src="<?= assetUrl() ?>img/<?= $org_details['name'] ?>/<?= $org_details['image'] ?>" height="125px">
 </div>
 

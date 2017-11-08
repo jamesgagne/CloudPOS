@@ -15,7 +15,7 @@ class Userauth  {
     function __construct() 
     {
       error_reporting(E_ALL & ~E_NOTICE);
-      $this->login_page = base_url() . "index.php?/Home";
+      $this->login_page = base_url() . "index.php?/PortalHome";
       $this->logout_page = base_url() . "index.php?/Home";
     }
 
@@ -186,7 +186,7 @@ class Userauth  {
     {
         $_SESSION['username'] = $this->username;
         $_SESSION['accesslevel'] = $this->accesslevel;
-        $_SESSION['basepage'] = base_url() . "index.php?/Home";
+        $_SESSION['basepage'] = base_url() . "index.php?/PortalHome";
         $_SESSION['org_id'] = $this->org_id;
         
     }
