@@ -42,7 +42,7 @@
                   <?php if (($key%4)==0):?>
                   </tr><tr>
                   <?php endif ?>
-                  <td>
+                  <td style="border: 1px solid lightgrey;">
                   <figure style="display:inline-block" width="100px">
                   <img src="<?=assetUrl()?>img/<?=$org_details['name']?>/<?=$value['image']?>" height="100em" >
                   <figcaption style="text-align: center;"><?=$value['name']?></figcaption>
@@ -73,7 +73,7 @@
                 $('#item-section').block({ 
                 message: 'Please select a Contact',
                 cursor: 'not-allowed', 
-                css: { border: '3px solid #a00',
+                css: { border: '3px solid black',
                 cursor: 'not-allowed'
               } 
             });

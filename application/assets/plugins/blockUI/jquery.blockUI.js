@@ -132,9 +132,8 @@
         color:    '#000',
         border:   '3px solid #aaa',
         backgroundColor:'#fff',
-        cursor:   'wait'
+        cursor:   'not-allowed'
       },
-
       // minimal style set used when themes are used
       themedCSS: {
         width:  '30%',
@@ -146,7 +145,7 @@
       overlayCSS:  {
         backgroundColor:  '#000',
         opacity:      0.6,
-        cursor:       'wait'
+        cursor:       'not-allowed'
       },
 
       // style to replace wait cursor before unblocking to correct issue

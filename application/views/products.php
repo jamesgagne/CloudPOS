@@ -23,7 +23,7 @@
 
   </style>
     <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
+    <div class="jumbotron" style="overflow: hidden; min-height: 63vh;">
       <div class="container">
         <div id="addnew">
         </div>
