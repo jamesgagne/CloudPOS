@@ -38,30 +38,7 @@ public function deleteLineItem($id){
 	return "success"; 
 }
 
-public function createOrder($post){
-$data = array(
-               'first_name' => $post['first_name'],
-               'last_name' => $post['last_name'],
-               'email' => $post['email'],
-               'phone' => $post['phone'],
-               'website' => $post['website'],
-               'type' => $post['type'],
-               'organization_ID' => $post['organization_ID'],
-               'company'=> $post['company']
-            );
-$q = $this->db->insert('contacts', $data); 
-$new_cont_id = $this->db->insert_id();
 
-	$data = array(
-               'street_address' => $post['address'],
-               'city_ID' => $post['city'],
-               'country_ID' => $post['country'],
-               'type'=> 'cont',
-               'user_id' => $new_cont_id,
-               'organization_id' => $post['organization_ID']
-            );
-$this->db->insert('addresses', $data); 
-}
 public function updateRecord($post){
 	$data = array(
                'first_name' => $post['first_name'],
@@ -132,6 +109,98 @@ $this->db->update('addresses', $data);
       }
       return $countries;
   }
+
+ public function getOrder($id){
+  $query = $this->db->get_where('orders',array('order_ID' => $id));
+  return $query->result_array();
+ } 
+  public function findCurrentOrder($contact_id){
+  $query = $this->db->get_where('orders',array('contact_ID' => $contact_id,'current'=>1));
+  return $query->result_array();
+ } 
+
+  public function getUser($id){
+  $query = $this->db->get_where('users',array('user_ID' => $id));
+  $result = $query->result_array();
+  return $result[0];
+
+ } 
+ public function getLineItems($order_id){
+  $query = $this->db->get_where('line_items',array('order_ID' => $order_id));
+  $result = $query->result_array();
+  foreach ($result as $key => $value) {
+    $query2 = $this->db->get_where('products',array('product_ID' => $value['product_ID']));
+    $result2 = $query2->result_array()[0];
+    $result[$key]['NameDesc'] = $result2['name'] ." ".$result2['description'];
+  }
+  return $result;
+ } 
+ public function getLineItemsByProd($order_id, $product_ID){
+  $query = $this->db->get_where('line_items',array('order_ID' => $order_id, 'product_ID'=>$product_ID));
+  $result = $query->result_array();
+  return $result;
+ }
+
+ public function createLine($prod,$order_id,$qty){
+    $data = array(
+               'order_ID' => $order_id,
+               'quantity' => $qty,
+               'product_ID' => $prod[0]['product_ID'],
+               'tax_ID' => 1,
+               'line_sub_total' => $prod[0]['selling_rate'] * $qty,
+               'line_total'=>0
+            );
+
+  $q = $this->db->insert('line_items', $data); 
+
+  $new_line_id = $this->db->insert_id();
+
+  return $new_line_id;
+
+ }
+  public function updateLine($prod,$updateID,$qty){
+    $data = array(
+               'quantity' => $qty,
+               'product_ID' => $prod[0]['product_ID'],
+               'line_sub_total' => $prod[0]['selling_rate'] * $qty
+            );
+    $this->db->where("line_item_ID", $updateID);
+  $q = $this->db->update('line_items', $data); 
+
+  return "success";
+
+ }
+ public function deleteRecord($id){
+  $this->db->delete('line_items', array('line_item_ID' => $id)); 
+  return "success"; 
+}
+public function createOrder($contact_ID, $user_id){
+         date_default_timezone_set('America/Toronto');
+  $date = date("Y-m-d H:i:s");
+  $data = array(
+               'contact_ID' => $contact_ID,
+               'user_ID' => $user_id,
+               'status' => "open",
+               'date' => $date,
+               'total' => 0,
+               'current'=>1
+            );
+
+  $q = $this->db->insert('orders', $data); 
+
+  $new_line_id = $this->db->insert_id();
+  return $new_line_id;
+}
+public function updateUsersCurrentOrder($resultID,  $user_id){
+  $data = array(
+               'current_order_ID' => $resultID
+            );
+    $this->db->where("user_ID", $user_id);
+  $q = $this->db->update('users', $data); 
+
+  return $resultID;
+}
+
   public function getValidationRules(){
   	return array(
         array(

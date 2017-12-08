@@ -57,9 +57,10 @@ $this->db->update('addresses', $data);
 
   
   public function getProduct($product_id, $organization_ID){ 
- 	$query = $this->db->get_where('products',array('organization_ID' => $organization_ID, 'product_ID'=>$contact_id));
+ 	$query = $this->db->get_where('products',array('organization_ID' => $organization_ID, 'product_ID'=>$product_id));
+  
  	return $query->result_array();
-
+ 
 
 }
 
