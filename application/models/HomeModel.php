@@ -74,9 +74,23 @@ $this->db->update('addresses', $data);
  	$query = $this->db->get_where('countries', array('country_ID' => $address['country_ID']));
  	$co =$query->result_array();
  	$country =  $co[0];
- 	$resp = array('address' => $address['street_address'], 'city' => $city['city_ID'], 'country'=>$country['country_ID'] );
+ 	$resp = array('address' => $address['street_address'], 'city' => $city['name'], 'country'=>$country['name'] );
  	
  	return $resp;
+ }
+  public function getOrgAddress($id){
+    $query = $this->db->get_where('addresses',array('organization_ID' => $id));
+    $add= $query->result_array();
+  $address=$add[0];
+  $query = $this->db->get_where('cities', array('city_ID' => $address['city_ID']));
+  $ci = $query->result_array();
+  $city =  $ci[0];
+  $query = $this->db->get_where('countries', array('country_ID' => $address['country_ID']));
+  $co =$query->result_array();
+  $country =  $co[0];
+  $resp = array('address' => $address['street_address'], 'city' => $city['name'], 'country'=>$country['name'] );
+  
+  return $resp;
  }
   public function getContact($contact_id, $organization_ID){ 
  	$query = $this->db->get_where('contacts',array('organization_ID' => $organization_ID, 'contact_ID'=>$contact_id));
@@ -169,6 +183,15 @@ $this->db->update('addresses', $data);
 
   return "success";
 
+ }
+ public function updateOrderTotal($SubTotal, $order_ID){
+  $data = array(
+               'total' => $SubTotal
+            );
+    $this->db->where("order_ID", $order_ID);
+  $q = $this->db->update('orders', $data); 
+
+  return $order_ID;
  }
  public function deleteRecord($id){
   $this->db->delete('line_items', array('line_item_ID' => $id)); 

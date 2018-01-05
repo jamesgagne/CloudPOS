@@ -36,6 +36,7 @@ class Home extends CI_Controller {
     
     }
     else{
+      $this->TPL['alertMsg'] = "Sorry The email and password do not match";
       $this->template->show('home',$this->TPL);
     }
   }

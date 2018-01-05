@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class PortalHome extends CI_Controller {
+class Invoices extends CI_Controller {
 
   var $TPL;
   var $org;
@@ -13,6 +13,7 @@ class PortalHome extends CI_Controller {
     $this->load->model('HomeModel');
     $this->load->model('ProductsModel');
     $this->load->model('ContactsModel');
+    $this->load->model('InvoicesModel');
     if($this->userauth->validSessionExists()){
 
     $this->org = $this->HomeModel->getOrganization();
@@ -25,17 +26,9 @@ class PortalHome extends CI_Controller {
 
       $user = $this->HomeModel->getUser($_SESSION['user_id']);
       if (($user['current_order_ID']!=null)&&($user['current_order_ID']!=0)){
-      $co = $this->HomeModel->getOrder($user['current_order_ID']);
-      if ($co[0]['status']=="open"){
-        $this->TPL['current_order'] = $co;
-        $this->TPL['activate'] = true;
-              $this->TPL['current_orderJSON'] = json_encode($this->TPL['current_order']);
-      }
-      else{
-        $this->TPL['activate'] = false;
-      }
-
-     
+      $this->TPL['current_order'] = $this->HomeModel->getOrder($user['current_order_ID']);
+      $this->TPL['current_orderJSON'] = json_encode($this->TPL['current_order']);
+      $this->TPL['activate'] = true;
       }
       else{
         $this->TPL['activate'] = false;
@@ -47,7 +40,7 @@ class PortalHome extends CI_Controller {
     $this->TPL['headerItem'] = "Name and Description";
     $this->TPL['headerQuantity'] = "Quantity";
     $this->TPL['headerSubtotal'] = "SubTotal";
-    $this->template->showCustomApp('portalHome', $this->TPL);
+    $this->template->showCustomApp('invoices', $this->TPL);
     }
     else{
     $this->template->show('home',$this->TPL);
@@ -126,10 +119,46 @@ class PortalHome extends CI_Controller {
       $this->index();
     }
   }
-  public function notAdmin(){
-    $this->TPL['forbidden']=true;
-    $this->index();
+  public function getOrders($id){
+    echo json_encode($this->InvoicesModel->getAllOrders($id));
   }
+  public function makeCurrent($id, $cont_id){
+    $this->HomeModel->updateUsersCurrentOrder($id,  $_SESSION['user_id']);
+    $this->InvoicesModel->updateContactsCurrentOrder($id,  $cont_id);
+    echo "success";
+  }
+  public function getNoTemplate(){
+    if($this->userauth->validSessionExists()){
 
+      $user = $this->HomeModel->getUser($_SESSION['user_id']);
+            if ($user['role_ID']!=1){
+        redirect('PortalHome/notAdmin');
+      }
+      else{ 
+      if (($user['current_order_ID']!=null)&&($user['current_order_ID']!=0)){
+      $this->TPL['current_order'] = $this->HomeModel->getOrder($user['current_order_ID']);
+      $this->TPL['current_orderJSON'] = json_encode($this->TPL['current_order']);
+      $this->TPL['activate'] = true;
+      }
+      else{
+        $this->TPL['activate'] = false;
+      }
+      $this->TPL['loggedin'] = $this->userauth->validSessionExists();
+    $this->TPL['org_details'] = $this->org;
+    $this->TPL['contacts'] = $this->HomeModel->getContacts();
+    $this->TPL['products'] = $this->ProductsModel->getData($this->TPL['org_details']['organization_ID']);
+    $this->TPL['headerItem'] = "Name and Description";
+    $this->TPL['headerQuantity'] = "Quantity";
+    $this->TPL['headerSubtotal'] = "SubTotal";
+    $this->TPL['orders'] = $this->InvoicesModel->getAllOrganizationOrders();
+    $this->load->view('adminInvoices', $this->TPL);
+    }
+    }
+    else{
+    redirect('Home');
+    }
+
+
+  }
 
 }

@@ -9,12 +9,20 @@ class Products extends CI_Controller {
   public function __construct()
   {
     parent::__construct();
+    $this->load->model('HomeModel');
+    $this->load->model('ProductsModel');
+    $this->load->model('ContactsModel');
     // Your own constructor code
   }
 
   public function index()
   {
     if($this->userauth->validSessionExists()){
+      $user = $this->HomeModel->getUser($_SESSION['user_id']);
+      if ($user['role_ID']!=1){
+        redirect('PortalHome/notAdmin');
+      }
+      else{
       $this->TPL['loggedin'] = $this->userauth->validSessionExists();
     $this->TPL['org_details'] = $this->getOrganization();
     $this->TPL['listing'] = $this->getAllProducts();
@@ -27,11 +35,11 @@ class Products extends CI_Controller {
     $this->TPL['headersku']= "SKU";
     $this->TPL['headerupc']= "UPC";
     $this->TPL['headermpn']= "MPN";
-    $this->template->showCustomApp('products', $this->TPL);
-
+    $this->load->view('products', $this->TPL);
     }
+  }
     else{
-    $this->template->show('home',$this->TPL);
+    redirect('Home');
     }
 
   }

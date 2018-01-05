@@ -27,7 +27,7 @@
               <input name="password" id="password" type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Log in</button>
-            <a href="#" class="btn btn-success">Sign up</a>
+            <a href="<?=base_url()?>index.php/Register"" class="btn btn-success">Sign up</a>
           </form>
           <br />
         </div>
@@ -65,6 +65,11 @@
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
+          $(document).ready(function(){
+            <?php if ($registerSuccess) :?>
+            alert('Thanks for registering Please login to proceed');
+            <?php endif?>
+          });
             (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
             function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
             e=o.createElement(i);r=o.getElementsByTagName(i)[0];

@@ -110,7 +110,7 @@
     var arr = JSON.parse(data);
     if (arr['validated'] && arr['sucess']){
       alert("Added Successfully");
-      location.reload();
+      window.location.reload();
     }
     else if(arr['validated'] && arr['sucess']){
       alert(arr['error']);

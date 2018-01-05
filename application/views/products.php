@@ -32,8 +32,7 @@
           <br />
         </div>
         </div>
-        <div class="form-group"><?= form_input(array('name' => 'search',
- 'id' => 'search' , 'class'=>'form-control', 'placeholder'=>'Type to search')); ?> </div>
+        <div class="form-group"></div>
       <TABLE id = "products">
   <tr><th style="text-align: center;"><?= $headerid ?></th>
     <th style="text-align: center;"><?= $headerfname ?></th>

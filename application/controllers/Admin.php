@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class PortalHome extends CI_Controller {
+class Admin extends CI_Controller {
 
   var $TPL;
   var $org;
@@ -24,6 +24,10 @@ class PortalHome extends CI_Controller {
     if($this->userauth->validSessionExists()){
 
       $user = $this->HomeModel->getUser($_SESSION['user_id']);
+      if ($user['role_ID']!=1){
+        redirect('PortalHome/notAdmin');
+      }
+      else{ 
       if (($user['current_order_ID']!=null)&&($user['current_order_ID']!=0)){
       $co = $this->HomeModel->getOrder($user['current_order_ID']);
       if ($co[0]['status']=="open"){
@@ -47,7 +51,8 @@ class PortalHome extends CI_Controller {
     $this->TPL['headerItem'] = "Name and Description";
     $this->TPL['headerQuantity'] = "Quantity";
     $this->TPL['headerSubtotal'] = "SubTotal";
-    $this->template->showCustomApp('portalHome', $this->TPL);
+    $this->template->showCustomApp('admin', $this->TPL);
+      }
     }
     else{
     $this->template->show('home',$this->TPL);
@@ -125,10 +130,6 @@ class PortalHome extends CI_Controller {
       $this->HomeModel->updateUsersCurrentOrder($order[0]['order_ID'],  $_SESSION['user_id']);
       $this->index();
     }
-  }
-  public function notAdmin(){
-    $this->TPL['forbidden']=true;
-    $this->index();
   }
 
 

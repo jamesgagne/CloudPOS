@@ -1,0 +1,126 @@
+string Beanstream.sendPayment(int soID, int payment_or_token, string payment_type)
+{
+    /*soID is the ZC id of the sales_order - must be open and already submitted to books
+  payment_or_token - the ZC id of the credit card information entered by the user OR
+           - the  ZC id of the token for client 
+  payment type is a string acceptable values are "cash", "card" and "token"
+  
+  */
+    //input.soID = 1323588000002977804;
+    //input.payment_or_token = 1323588000003445027;
+    // good card
+    //input.payment_or_token = 1323588000003445031;
+    // bad card
+    //input.payment_type = "card";
+    // Zoho is unable to handle anything other than a Code 200 response, so the next few lines below are meant for a temp workaround until this is fixed.
+    // We create a new record in Beanstream_Response and send the ID of this record as "ref2" over to Beanstream.  This ID is used as our reference to 
+    // know which transaction was completed.
+    // The otp server recevies the response from Beanstream and sends the data to Zoho into the Beanstream_Response_Raw form
+    // This triggers the Beanstream.parseResponse function to run, which updates the same record as the one we're just about to insert with the payment results
+    bsRespID = insert into Beanstream_Response
+    [
+      Sales_Order = input.soID
+      Payment1 = input.payment_or_token
+      Type = input.payment_type
+      Added_User = zoho.loginuser
+    ];
+    thisapp.addLog("Beanstream.sendPayment", "INFO", "Setting up for Beanstream response with ID: " + bsRespID);
+    order  =  Sales_Order  [ID == input.soID];
+    settings  =  Settings  [Settings_Key == 1];
+    access_code = settings.Beanstream_Transaction_Api_Code;
+    merchant_id = settings.Beanstream_Merchant_ID;
+    JSONString = map();
+    requestParams = map();
+    billingAddress = map();
+    shippingAddress = map();
+    cardInfo = map();
+    header = map();
+    baseEncoded = zoho.encryption.base64Encode(merchant_id + ":" + access_code);
+    url = "https://www.beanstream.com/api/v1/payments";
+    customerName = order.Customer.First_Name + " " + order.Customer.Last_Name;
+    //info customerName
+    billingAddress.put("name", customerName);
+    billingAddress.put("address_line1", order.Customer.Billing_Address_Line_1);
+    billingAddress.put("postal_code", order.Customer.Billing_Postal_Code);
+    billingAddress = thisapp.ZBooks.cleanJSON(billingAddress);
+    //info billingAddress
+    shippingAddress.put("name", customerName);
+    shippingAddress.put("address_line1", order.Customer.Shipping_Address_Line_1);
+    shippingAddress.put("postal_code", order.Customer.Shipping_Postal_Code);
+    shippingAddress = thisapp.ZBooks.cleanJSON(shippingAddress);
+    //info shippingAddress
+    if (input.payment_type  ==  "card")
+    {
+        card  =  Payment  [ID == input.payment_or_token];
+        cardInfo.put("name", customerName);
+        cardInfo.put("number", card.Card_Number);
+        cardInfo.put("expiry_month", card.Expiry_Month);
+        cardInfo.put("expiry_year", card.Expiry_Year);
+        cardInfo.put("cvd", card.CVD);
+        cardInfo = thisapp.ZBooks.cleanJSON(cardInfo);
+        //info card;
+        //JSONString.put("order_number", "10000123");
+        JSONString.put("card", cardInfo);
+        JSONString.put("payment_method", "card");
+    }
+    if (input.payment_type  ==  "cash")
+    {
+        JSONString.put("payment_method", "cash");
+    }
+    if (input.payment_type  ==  "token")
+    {
+        JSONString.put("payment_method", "payment_profile");
+        token = Token[ID = input.payment_or_token].Token;
+        tokenMap = map();
+        tokenMap.put("customer_code", token);
+        tokenMap.put("card_id", 1);
+        tokenMap.put("complete", true);
+        tokenMap = thisapp.ZBooks.cleanJSON(tokenMap);
+        JSONString.put("payment_profile", tokenMap);
+    }
+    JSONString.put("billing", billingAddress);
+    JSONString.put("shipping", shippingAddress);
+    amount = thisapp.ZBooks.getSalesOrderAmount(order.ZB_Sales_Order_ID.toLong());
+    JSONString.put("amount", amount);
+    // the customMap below is used for tracking Beanstream responses... 
+    // ref1 is used by the OTP Server to figure out who the user is that the response should go to
+    // ref2 is the ID of the Beanstream_Response record that needs to be updated with the response.
+    customMap = map();
+    customMap.put("ref1", zoho.adminuser);
+    customMap.put("ref2", bsRespID);
+    tokenMap = thisapp.ZBooks.cleanJSON(customMap);
+    JSONString.put("custom", customMap);
+    //info JSONString;
+    header.put("Authorization", "Passcode " + baseEncoded);
+    header.put("Content-Type", "application/json");
+    header = thisapp.ZBooks.cleanJSON(header);
+    //info header;
+    newStr = thisapp.Beanstream.mapToJSON(JSONString);
+    //info "newStr = " + newStr;
+    //info "header = " + header;
+    thisapp.addLog("Beanstream.sendPayment", "INFO", "Sending payment to Beanstream.");
+    resp = postUrl(url, newStr, header,false);
+    //info resp;
+    if (resp.get("responseCode")  ==  "200")
+    {
+        respData = resp.get("responseText");
+        thisapp.addLog("Beanstream.sendPayment", "INFO", "Beanstream response: " + respData);
+        //resp = {"responseCode":"200","responseText":"{\"id\":\"10000064\",\"approved\":\"1\",\"message_id\":\"1\",\"message\":\"Approved\",\"auth_code\":\"TEST\",\"created\":\"2016-02-28T08:24:55\",\"order_number\":\"10000064\",\"type\":\"P\",\"payment_method\":\"CC\",\"card\":{\"card_type\":\"VI\",\"last_four\":\"1234\",\"cvd_match\":0,\"address_match\":0,\"postal_result\":0},\"links\":[{\"rel\":\"void\",\"href\":\"https://www.beanstream.com/api/v1/payments/10000064/void\",\"method\":\"POST\"},{\"rel\":\"return\",\"href\":\"https://www.beanstream.com/api/v1/payments/10000064/returns\",\"method\":\"POST\"}]}"}
+        return respData;
+    }
+    else
+    {
+        thisapp.addLog("Beanstream.sendPayment", "ERROR", "Beanstream response: " + resp);
+        return "fail";
+    }
+    //info "<br>resp = " + resp;
+    // Thus function sends the payment information to the payment processor
+    // It will return the authorization result from the payment processor as one of the following:
+    //      Bad Request
+    //    Authentication Failure
+    //    Business Rule Violation or Decline
+    //    Authorization Failure
+    //    Invalid Request Method
+    //    Internal Server Error
+    return "";
+}

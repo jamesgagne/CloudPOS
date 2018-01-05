@@ -243,6 +243,22 @@ $validation = array(
 
     )
         ),
+        array(
+                'field' => 'merchant_id',
+                'label' => 'Bambora Merchant ID',
+                'rules' => 'required',
+                'errors' => array(
+                        'required' => 'You must provide a %s.'
+    )
+        ),
+        array(
+                'field' => 'access_code',
+                'label' => 'Bambora Access Key',
+                'rules' => 'required',
+                'errors' => array(
+                        'required' => 'You must provide a %s.'
+    )
+        ),
 );
 
     $this->form_validation->set_error_delimiters('<div class="error">', '</div>');
@@ -277,12 +293,14 @@ $validation = array(
          $cont_city = $this->input->post("cont_city");
          $cont_country = $this->input->post("cont_country");
          $password = sha1($this->input->post("password"));
+         $merchant_id = $this->input->post("merchant_id");
+         $access_code = sha1($this->input->post("access_code"));
          $salt = sha1($organization_name);
          $storedVal = sha1($password.$salt);
          date_default_timezone_set('America/Toronto');
          $billing_due_date = date("Y-m-d H:i:s");
-        $q = $this->db->conn_id->prepare("insert into organizations(name,website,image,subscription_id,company_color,billing_due_date) VALUES ( ?,?,?,?,?,?)");
-           $q->bind_param("ssssss",$organization_name, $website, $company_img,$subscription_id,$company_color,$billing_due_date); 
+        $q = $this->db->conn_id->prepare("insert into organizations(name,website,image,subscription_id,company_color,billing_due_date,merchant_id) VALUES ( ?,?,?,?,?,?,?)");
+           $q->bind_param("sssssss",$organization_name, $website, $company_img,$subscription_id,$company_color,$billing_due_date, $merchant_id); 
             if ($q->execute()){
               $this->TPL['resp'] = "<p class='text-success'>Thanks for reaching out we will get back to you as soon as possible :)";
               if (isset($_FILES['company_img'])){
@@ -292,6 +310,11 @@ $validation = array(
                     copy($src, $destination);                   
                   }
                   $new_org_id = $q->insert_id;
+                  $query = $this->db->query("update organizations set access_code='".$_POST['access_code']."' where organization_id=".$new_org_id);
+                    if ($query){    
+                      $this->TPL['continue'] = true;
+                    }
+
                    $userQuery = $this->db->conn_id->prepare("insert into users(first_name,last_name,organization_id,role_id,phone,hash,salt,email,is_primary) VALUES ( ?,?,?,?,?,?,?,?,?)");
                    $user_level = 1;
                    $is_primary = 1;
@@ -328,7 +351,8 @@ $validation = array(
           
                       $this->TPL['cityOptions'] = $this->getAllCities();
                       $this->TPL['countryOptions'] = $this->getAllCountries();
-                      $this->template->show('register', $this->TPL);
+                      $this->TPL['registerSuccess'] = true;
+                      $this->template->show('home', $this->TPL);
                 } 
 
 

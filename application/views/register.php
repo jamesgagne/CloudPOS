@@ -66,10 +66,23 @@
 </div>
 <div class="form-group">
 
-<?= form_error('company_color'); ?>
-<?= form_label('Please Select your primary company color:', 'company_color'); ?> <br />
+
 <?= form_input(array('type'=>'color','name' => 'company_color',
- 'id' => 'company_img', 'value'=> '#2965a7')); ?> <br />
+ 'id' => 'company_img', 'value'=> '#2965a7', 'style'=>'visibility:hidden')); ?> <br />
+</div>
+ <div class="form-group">
+  <h3>CloudPOS uses Bambora Payment Services <br />
+    Please register <a href="https://www.bambora.com" target="_blank">here</a></h3><br />
+    <?= form_error('merchant_id'); ?>
+      <?= form_input(array('name' => 'merchant_id',
+ 'id' => 'merchant_id', 'value'=> set_value('merchant_id'), 'class'=>'form-control', 'placeholder'=>'
+ Bambora Merchant ID')); ?> 
+    <?= form_error('access_code'); ?>
+      <?= form_input(array('name' => 'access_code',
+ 'id' => 'access_code', 'value'=> set_value('access_code'), 'class'=>'form-control', 'placeholder'=>'
+ Bambora API Access Key')); ?> 
+</div>
+<div class="form-group">
 </div>
 <div class="form-group">
 <?= form_input(array('type'=>'hidden','name' => 'formSubmit',
